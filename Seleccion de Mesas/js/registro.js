@@ -1,193 +1,206 @@
-// 1. Objeto dinámico de capacidad con 15 lugares por mesa
-const mesasData = {
-    "Mesa 1": { capacidadTotal: 15, ocupados: 0, moderador: "Modera Mesa 1" },
-    "Mesa 2": { capacidadTotal: 15, ocupados: 0, moderador: "Modera Mesa 2" },
-    "Mesa 3": { capacidadTotal: 15, ocupados: 0, moderador: "Modera Mesa 3" },
-    "Mesa 4": { capacidadTotal: 15, ocupados: 0, moderador: "Modera Mesa 4" }
-};
+<!DOCTYPE html>
+<html lang="es">
 
-let contadorFolio = 0;
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Asistentes | Mesa Interparlamentaria</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="css/registro.css">
+</head>
 
-document.addEventListener("DOMContentLoaded", () => {
-    renderizarAsientos();
-    actualizarInterfazLugares();
-    inicializarSeleccionMesas();
-    inicializarFormulario();
-});
+<body class="d-flex flex-column min-vh-100">
 
-// Genera los 15 puntos (sillas) distribuidos arriba y abajo de la mesa
-function renderizarAsientos() {
-    const mapaIds = {
-        "Mesa 1": "mesa1",
-        "Mesa 2": "mesa2",
-        "Mesa 3": "mesa3",
-        "Mesa 4": "mesa4"
-    };
+    <!-- Header Verde Institucional -->
+    <nav class="navbar text-white">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="index.html" class="text-white text-decoration-none fw-bold fs-5">
+                <i class="bi bi-arrow-left me-2"></i>Volver al Inicio
+            </a>
+            <span class="fw-semibold d-none d-md-inline">Comisión de Zonas Metropolitanas</span>
+            <a href="admin.html" class="btn btn-outline-light btn-sm px-3">
+                <i class="bi bi-lock-fill me-1"></i>Admin
+            </a>
+        </div>
+    </nav>
 
-    for (const [nombreMesa, info] of Object.entries(mesasData)) {
-        const idSuffix = mapaIds[nombreMesa];
-        const topContainer = document.getElementById(`sillas-top-${idSuffix}`);
-        const bottomContainer = document.getElementById(`sillas-bottom-${idSuffix}`);
+    <!-- Formulario Principal -->
+    <main class="container my-auto py-4">
+        <div class="card card-registro p-4 p-md-5 mx-auto" style="max-width: 1000px;">
+            
+            <h2 class="text-center fw-bold titulo-principal mb-4">Registro de Asistencia</h2>
 
-        if (topContainer && bottomContainer) {
-            topContainer.innerHTML = "";
-            bottomContainer.innerHTML = "";
+            <form id="registroForm">
+                <!-- Campo oculto para registrar la mesa elegida -->
+                <input type="hidden" id="mesaSeleccionada" name="mesaSeleccionada" value="">
 
-            // Distribuir 8 sillas arriba y 7 sillas abajo (Total: 15)
-            for (let i = 0; i < info.capacidadTotal; i++) {
-                const silla = document.createElement("span");
-                silla.classList.add("silla-dot");
-                
-                // Determinar si está disponible u ocupada
-                if (i < info.ocupados) {
-                    silla.classList.add("ocupado");
-                } else {
-                    silla.classList.add("disponible");
-                }
+                <!-- Inputs Nombre y Cargo -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                            <input type="text" class="form-control" id="nombre" placeholder="Nombre completo" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-briefcase-fill"></i></span>
+                            <input type="text" class="form-control" id="cargo" placeholder="Cargo u organización" required>
+                        </div>
+                    </div>
+                </div>
 
-                if (i < 8) {
-                    topContainer.appendChild(silla);
-                } else {
-                    bottomContainer.appendChild(silla);
-                }
-            }
-        }
-    }
-}
+                <!-- Input Teléfono -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-12">
+                        <label class="form-label fw-semibold text-secondary">Número de contacto</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
+                            <input type="tel" class="form-control" id="telefono" placeholder="55 12 34 56 78" required>
+                        </div>
+                    </div>
+                </div>
 
-// Actualiza números y barras de progreso
-function actualizarInterfazLugares() {
-    const mapaIds = {
-        "Mesa 1": "mesa1",
-        "Mesa 2": "mesa2",
-        "Mesa 3": "mesa3",
-        "Mesa 4": "mesa4"
-    };
+                <!-- Sección Mesas de Trabajo -->
+                <h3 class="text-center fw-bold text-dark my-4">Seleccione una Mesa de Trabajo</h3>
 
-    for (const [nombreMesa, info] of Object.entries(mesasData)) {
-        const idSuffix = mapaIds[nombreMesa];
-        const disponibles = info.capacidadTotal - info.ocupados;
-        const porcentaje = (disponibles / info.capacidadTotal) * 100;
+                <div class="row g-3 text-center mb-4">
+                    
+                    <!-- Mesa 1 -->
+                    <div class="col-md-3">
+                        <div class="mesa-card" data-mesa="Mesa 1">
+                            <h4 class="mesa-titulo">MESA 1</h4>
+                            <p class="mesa-sub">Gobernanza Metropolitana</p>
+                            <span class="modera-text"><i class="bi bi-mic-fill me-1"></i><strong>Modera:</strong> Modera Mesa 1</span>
+                            
+                            <div class="sillas-grid mb-1" id="sillas-top-mesa1"></div>
+                            <div class="capsula-icono my-1"><i class="bi bi-people-fill fs-4"></i></div>
+                            <div class="sillas-grid mt-1 mb-2" id="sillas-bottom-mesa1"></div>
 
-        const txtElemento = document.getElementById(`txt-${idSuffix}`);
-        const barElemento = document.getElementById(`bar-${idSuffix}`);
+                            <div class="barra-progreso-contenedor">
+                                <div class="barra-progreso" id="bar-mesa1" style="width: 100%;"></div>
+                            </div>
+                            <span class="cupos-texto" id="txt-mesa1">15 / 15 disponibles</span>
+                        </div>
+                    </div>
 
-        if (txtElemento && barElemento) {
-            txtElemento.textContent = `${disponibles} / ${info.capacidadTotal} disponibles`;
-            barElemento.style.width = `${porcentaje}%`;
+                    <!-- Mesa 2 -->
+                    <div class="col-md-3">
+                        <div class="mesa-card" data-mesa="Mesa 2">
+                            <h4 class="mesa-titulo">MESA 2</h4>
+                            <p class="mesa-sub">Financiamiento</p>
+                            <span class="modera-text"><i class="bi bi-mic-fill me-1"></i><strong>Modera:</strong> Modera Mesa 2</span>
+                            
+                            <div class="sillas-grid mb-1" id="sillas-top-mesa2"></div>
+                            <div class="capsula-icono my-1"><i class="bi bi-cash-coin fs-4"></i></div>
+                            <div class="sillas-grid mt-1 mb-2" id="sillas-bottom-mesa2"></div>
 
-            if (disponibles <= 3) {
-                barElemento.style.backgroundColor = "#ef4444"; // Rojo
-            } else if (disponibles <= 7) {
-                barElemento.style.backgroundColor = "#f59e0b"; // Naranja
-            } else {
-                barElemento.style.backgroundColor = "#22c55e"; // Verde
-            }
-        }
-    }
+                            <div class="barra-progreso-contenedor">
+                                <div class="barra-progreso" id="bar-mesa2" style="width: 100%;"></div>
+                            </div>
+                            <span class="cupos-texto" id="txt-mesa2">15 / 15 disponibles</span>
+                        </div>
+                    </div>
 
-    // Volver a renderizar el estado de los asientos
-    renderizarAsientos();
-}
+                    <!-- Mesa 3 -->
+                    <div class="col-md-3">
+                        <div class="mesa-card" data-mesa="Mesa 3">
+                            <h4 class="mesa-titulo">MESA 3</h4>
+                            <p class="mesa-sub">Planeación Territorial</p>
+                            <span class="modera-text"><i class="bi bi-mic-fill me-1"></i><strong>Modera:</strong> Modera Mesa 3</span>
+                            
+                            <div class="sillas-grid mb-1" id="sillas-top-mesa3"></div>
+                            <div class="capsula-icono my-1"><i class="bi bi-map-fill fs-4"></i></div>
+                            <div class="sillas-grid mt-1 mb-2" id="sillas-bottom-mesa3"></div>
 
-// Manejo de la selección de mesas
-function inicializarSeleccionMesas() {
-    const tarjetasMesa = document.querySelectorAll(".mesa-card");
-    const campoMesaOculto = document.getElementById("mesaSeleccionada");
+                            <div class="barra-progreso-contenedor">
+                                <div class="barra-progreso" id="bar-mesa3" style="width: 100%;"></div>
+                            </div>
+                            <span class="cupos-texto" id="txt-mesa3">15 / 15 disponibles</span>
+                        </div>
+                    </div>
 
-    tarjetasMesa.forEach(card => {
-        card.addEventListener("click", () => {
-            const nombreMesa = card.dataset.mesa;
-            const info = mesasData[nombreMesa];
+                    <!-- Mesa 4 -->
+                    <div class="col-md-3">
+                        <div class="mesa-card" data-mesa="Mesa 4">
+                            <h4 class="mesa-titulo">MESA 4</h4>
+                            <p class="mesa-sub">Información y Evaluación</p>
+                            <span class="modera-text"><i class="bi bi-mic-fill me-1"></i><strong>Modera:</strong> Modera Mesa 4</span>
+                            
+                            <div class="sillas-grid mb-1" id="sillas-top-mesa4"></div>
+                            <div class="capsula-icono my-1"><i class="bi bi-bar-chart-fill fs-4"></i></div>
+                            <div class="sillas-grid mt-1 mb-2" id="sillas-bottom-mesa4"></div>
 
-            if (info.capacidadTotal - info.ocupados <= 0) {
-                alert("Esta mesa ya no cuenta con lugares disponibles.");
-                return;
-            }
+                            <div class="barra-progreso-contenedor">
+                                <div class="barra-progreso" id="bar-mesa4" style="width: 100%;"></div>
+                            </div>
+                            <span class="cupos-texto" id="txt-mesa4">15 / 15 disponibles</span>
+                        </div>
+                    </div>
 
-            tarjetasMesa.forEach(m => m.classList.remove("seleccionada"));
-            card.classList.add("seleccionada");
-            campoMesaOculto.value = nombreMesa;
-        });
-    });
-}
+                </div>
 
-// Procesa el registro y guarda en localStorage
-function inicializarFormulario() {
-    const btnRegistrar = document.getElementById("btnRegistrar");
-    const modalElemento = new bootstrap.Modal(document.getElementById('modalConfirmacion'));
+                <!-- Botón de Registro Centrado -->
+                <div class="text-center mt-4">
+                    <button type="button" id="btnRegistrar" class="btn btn-registro-pro">
+                        Registrar Asistencia <i class="bi bi-arrow-right-circle-fill ms-2"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
 
-    btnRegistrar.addEventListener("click", () => {
-        const nombre = document.getElementById("nombre").value.trim();
-        const cargo = document.getElementById("cargo").value.trim();
-        const telefono = document.getElementById("telefono").value.trim();
-        const mesaSeleccionada = document.getElementById("mesaSeleccionada").value;
+    <!-- Modal de Confirmación Estilizado -->
+    <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header text-white p-4" style="background-color: #004d43;">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-check-circle-fill me-2 text-warning"></i>¡Registro Exitoso!
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <p class="text-muted mb-2 fs-6">Comisión de Zonas Metropolitanas</p>
+                    <div class="badge px-3 py-2 fs-6 mb-3" style="background-color: #e6f2f0; color: #004d43; border: 1px solid #004d43;">
+                        Folio: <span id="modalFolio" class="fw-bold">CZM-00000</span>
+                    </div>
 
-        if (!nombre || !cargo || !telefono || !mesaSeleccionada) {
-            alert("Por favor complete todos los campos y seleccione una mesa.");
-            return;
-        }
+                    <div class="text-start bg-light p-3 rounded-3 mb-3 border">
+                        <div class="mb-2">
+                            <small class="text-muted d-block">Participante:</small>
+                            <span id="modalNombre" class="fw-bold text-dark fs-5">---</span>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted d-block">Cargo / Organización:</small>
+                            <span id="modalCargo" class="fw-semibold text-secondary">---</span>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Mesa Asignada:</small>
+                            <span id="modalMesa" class="fw-bold text-success">---</span>
+                        </div>
+                    </div>
 
-        // Registrar un lugar en la mesa
-        if (mesasData[mesaSeleccionada]) {
-            mesasData[mesaSeleccionada].ocupados++;
-            actualizarInterfazLugares();
-        }
+                    <p class="small text-muted mb-0">Tus datos han sido registrados en la lista oficial de asistencia.</p>
+                </div>
+                <div class="modal-footer bg-light justify-content-center p-3">
+                    <button type="button" class="btn text-white px-5 py-2 fw-semibold rounded-pill" style="background-color: #004d43;" data-bs-dismiss="modal">
+                        Aceptar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        // Generar folio
-        contadorFolio++;
-        const folioFormateado = `CZM-${String(contadorFolio).padStart(5, '0')}`;
+    <!-- Scripts de Bootstrap y lógica personalizada -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/registro.js"></script>
+</body>
 
-        // ----------------------------------------------------
-        // NUEVO: Guardar el registro en el almacenamiento local
-        // ----------------------------------------------------
-        const nuevoRegistro = {
-            folio: folioFormateado,
-            nombre: nombre,
-            cargo: cargo,
-            telefono: telefono,
-            mesa: mesaSeleccionada,
-            fecha: new Date().toLocaleString()
-        };
-
-        // Obtener lista actual o crear una nueva
-        let registrosGuardados = JSON.parse(localStorage.getItem("asistentes_czm")) || [];
-        registrosGuardados.push(nuevoRegistro);
-        
-        // Guardar array actualizado
-        localStorage.setItem("asistentes_czm", JSON.stringify(registrosGuardados));
-        // ----------------------------------------------------
-
-        // Mostrar datos en el Modal
-        document.getElementById("modalNombre").textContent = nombre;
-        document.getElementById("modalCargo").textContent = cargo;
-        document.getElementById("modalMesa").textContent = mesaSeleccionada;
-        document.getElementById("modalFolio").textContent = folioFormateado;
-
-        modalElemento.show();
-
-        // Limpiar inputs
-        document.getElementById("nombre").value = "";
-        document.getElementById("cargo").value = "";
-        document.getElementById("telefono").value = "";
-        document.getElementById("mesaSeleccionada").value = "";
-        
-        document.querySelectorAll(".mesa-card").forEach(m => m.classList.remove("seleccionada"));
-    });
-    
- // Agrega esto al FINAL de js/registro.js
-function accesoAdmin() {
-    const claveCorrecta = "1234"; // Cambia "1234" por tu contraseña deseada
-    const claveIngresada = prompt("Ingrese la clave de acceso de Administrador:");
-
-    if (claveIngresada === null) {
-        return; // El usuario le dio a "Cancelar"
-    }
-
-    if (claveIngresada.trim() === claveCorrecta) {
-        window.location.href = "admin.html";
-    } else {
-        alert("Contraseña incorrecta. Acceso denegado.");
-    }
-}
-}
+</html>
